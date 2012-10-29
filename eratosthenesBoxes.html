@@ -1,0 +1,97 @@
+<head>
+	<style type="text/css">
+		*  {
+				margin:0;
+				padding:0;
+				border:0;
+			}
+		.box {  width:25px; 
+				height:25px;
+				background:gainsboro;
+				float:left;
+				border: 1px solid white; 
+				line-height: 25px;
+				font-family:sans-serif;
+				font-size:6pt;
+				text-align: center;
+				/*Transformation properties*/
+				-webkit-transition: background 1s linear;
+				-moz-transition: background 1s linear;
+				-ms-transition: background 1s linear;
+				-o-transition: background 1s linear;
+				transition: background 1s linear;
+			}
+		.unity {background:gray}
+		.prime {background:red}
+		.notPrime {background:orange}
+	</style>
+</head>
+<body>
+	<script>
+		// How many natural numbers do we want to test?
+		limit = 5001
+		
+		// Build the boxes and the array:
+		natNums = [1]
+		for (i=1; i<limit; i++) {
+			newDiv = document.createElement('div')
+			newDiv.className = 'box'
+			newDiv.id = 'box' + i
+			if (i==1) {newDiv.className += ' unity'}
+			newDiv.innerHTML = i
+			document.body.appendChild(newDiv)
+			natNums.push(1)
+		}
+		
+		// Init some boring numbers:
+		natNums[0] = 0
+		natNums[1] = 0
+		outerCurrent = 2
+
+		// Function to knock out one number, return the next prime:
+		function oneColoring(current) {
+			// Color the current as prime:
+			natNums[current] = 2
+			document.getElementById('box' + current).className = 'box prime'
+			// Color multiples of the current as composite:
+			for (j=2; j<limit/current; j++) {
+				document.getElementById('box' + current*j).className = 'box notPrime'
+				natNums[current*j] = 0
+			}
+			// Find the next current:
+			while (natNums[current]!=1 && current!=limit) {
+				current++
+			}
+			return current
+			startingDelay = startingDelay - 5
+		}
+		
+		function instantly() {
+			// Color everything instantly, starting with 2:
+			while (outerCurrent < limit) {
+				outerCurrent = oneColoring(outerCurrent)
+			}
+		}
+
+		function evenly() {
+			// Color everything going at 1box per second:
+			setInterval(function(){if(outerCurrent<limit){outerCurrent = oneColoring(outerCurrent)}}, 2000);			
+		}		
+		
+		function accelerate() {
+			// Color everything and accelerate:
+			initialTimeout = 3000
+			accelerationRate = 1.1
+			function setAndNext(timeout) {
+				if (outerCurrent < limit) {
+					outerCurrent = oneColoring(outerCurrent)
+					setTimeout(function() {setAndNext(timeout/accelerationRate)}, timeout)
+				}
+			}
+			setAndNext(initialTimeout)
+		}
+
+		// Make the magic happen:
+		accelerate()
+	</script>
+</body>
